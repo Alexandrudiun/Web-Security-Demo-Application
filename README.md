@@ -1,6 +1,6 @@
-==============================
+
 🛡️ Web Security Demo Application
-==============================
+
 
 This is an intentionally vulnerable PHP application created for **educational purposes only**. 
 It demonstrates common web vulnerabilities such as:
