@@ -4,7 +4,7 @@ include_once 'conn.php';
 
 // No authentication check - missing session validation
 
-// Process money transfer (CSRF vulnerability - no tokens)
+// Process regular user transfer (CSRF vulnerability)
 if(isset($_POST['transfer'])) {
     $to_id = $_POST['to_id'];
     $amount = $_POST['amount'];
@@ -22,12 +22,28 @@ if(isset($_POST['transfer'])) {
     $success = "Transfer successful!";
 }
 
+// Process ADMIN transfer (no authorization check)
+if(isset($_POST['admin_transfer'])) {
+    $from_id = $_POST['from_id'];
+    $to_id = $_POST['to_id'];
+    $amount = $_POST['amount'];
+    
+    // Admin can transfer between any accounts
+    $sql = "UPDATE users SET money = money - $amount WHERE id = $from_id";
+    mysqli_query($conn, $sql);
+    
+    $sql = "UPDATE users SET money = money + $amount WHERE id = $to_id";
+    mysqli_query($conn, $sql);
+    
+    $admin_success = "Admin transfer successful!";
+}
+
 // Process message update (XSS vulnerability)
 if(isset($_POST['update_message'])) {
     $message = $_POST['message'];
     $user_id = $_SESSION['user_id'];
     
-    // No sanitization of message
+    // No sanitization
     $sql = "UPDATE users SET message = '$message' WHERE id = $user_id";
     mysqli_query($conn, $sql);
     $msg_success = "Message updated!";
@@ -39,11 +55,13 @@ $sql = "SELECT * FROM users WHERE id = $user_id";
 $result = mysqli_query($conn, $sql);
 $user = mysqli_fetch_assoc($result);
 
+// Check if admin (using role column)
+$is_admin = ($user['role'] == 'admin');
+
 // Search functionality (SQL injection)
 $users = [];
 if(isset($_GET['search'])) {
     $search = $_GET['search'];
-    // SQL injection vulnerability
     $sql = "SELECT id, email, message FROM users WHERE email LIKE '%$search%'";
     $search_result = mysqli_query($conn, $sql);
     while($row = mysqli_fetch_assoc($search_result)) {
@@ -57,6 +75,7 @@ if(isset($_GET['search'])) {
 <head>
     <title>Dashboard - Vulnerable App</title>
     <style>
+        /* Existing styles remain the same */
         body { font-family: Arial, sans-serif; margin: 0; padding: 20px; }
         .container { max-width: 800px; margin: 0 auto; }
         .card { border: 1px solid #ccc; padding: 15px; margin-bottom: 20px; }
@@ -77,7 +96,6 @@ if(isset($_GET['search'])) {
         
         <div class="card">
             <h3>Your Message:</h3>
-            <!-- XSS vulnerability - direct output of user data -->
             <p><?php echo $user['message']; ?></p>
             
             <h4>Update Message:</h4>
@@ -88,8 +106,27 @@ if(isset($_GET['search'])) {
             </form>
         </div>
         
+        <?php if($is_admin): ?>
         <div class="card">
-            <h3>Transfer Money:</h3>
+            <h3 style="color: red;">ADMIN Transfer System</h3>
+            <?php if(isset($admin_success)) { echo "<p class='success'>$admin_success</p>"; } ?>
+            <form method="POST" action="">
+                <label for="from_id">From Account ID:</label>
+                <input type="number" name="from_id" required>
+                
+                <label for="to_id">To Account ID:</label>
+                <input type="number" name="to_id" required>
+                
+                <label for="amount">Amount:</label>
+                <input type="number" name="amount" required>
+                
+                <input type="submit" name="admin_transfer" value="Execute Admin Transfer">
+            </form>
+        </div>
+        <?php endif; ?>
+        
+        <div class="card">
+            <h3>Personal Transfer:</h3>
             <?php if(isset($success)) { echo "<p class='success'>$success</p>"; } ?>
             <form method="POST" action="">
                 <label for="to_id">Recipient ID:</label>
@@ -120,7 +157,6 @@ if(isset($_GET['search'])) {
                         <tr>
                             <td><?php echo $u['id']; ?></td>
                             <td><?php echo $u['email']; ?></td>
-                            <!-- XSS vulnerability -->
                             <td><?php echo $u['message']; ?></td>
                         </tr>
                     <?php endforeach; ?>

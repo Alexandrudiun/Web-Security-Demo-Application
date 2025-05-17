@@ -32,19 +32,20 @@ CREATE TABLE `users` (
   `email` varchar(256) NOT NULL,
   `pass` varchar(256) NOT NULL,
   `message` text NOT NULL,
-  `money` int(11) NOT NULL
+  `money` int(11) NOT NULL,
+  `role` varchar(20) NOT NULL DEFAULT 'user' -- Added role column
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`id`, `email`, `pass`, `message`, `money`) VALUES
-(1, 'admin@example.com', 'admin123', 'I am the administratorsfdsfda', 10000),
-(2, 'user@example.com', 'password123', 'Regular user here', 500),
-(3, 'alice@example.com', 'alice123', 'Hello from Alice!', 1200),
-(4, 'bob@example.com', 'bob456', 'Bob was here', 800);
-
+INSERT INTO `users` (`id`, `email`, `pass`, `message`, `money`, `role`) VALUES
+(1, 'admin@example.com', 'admin123', 'I am the administrator', 10000, 'admin'), -- Admin role
+(2, 'user@example.com', 'password123', 'Regular user here', 500, 'user'),
+(3, 'alice@example.com', 'alice123', 'Hello from Alice!', 1200, 'user'),
+(4, 'bob@example.com', 'bob456', 'Bob was here', 800, 'user'),
+(7, 'test2@gmail.com', 'test2pass', 'Test account', 0, 'user'); 
 --
 -- Indexes for dumped tables
 --
@@ -63,7 +64,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8; -- Set to 8 for next insert
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

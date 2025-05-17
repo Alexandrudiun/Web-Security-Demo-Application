@@ -68,3 +68,4 @@ It demonstrates common web vulnerabilities such as:
 
 This lab demonstrates how real-world attacks work so developers and students 
 can learn how to defend against them. Use only in local or controlled environments.
+
