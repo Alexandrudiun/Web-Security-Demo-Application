@@ -1,30 +1,36 @@
 <?php
 include_once 'conn.php';
 
-// Vulnerable reset implementation
+// Improved reset implementation
 if(isset($_POST['confirm_reset'])) {
     // No CSRF protection
     
-    // Drop table if exists (without checking permissions)
+    // Drop table if exists
     $sql = "DROP TABLE IF EXISTS users";
     mysqli_query($conn, $sql);
     
-    // Recreate table with InnoDB engine explicitly specified
+    // Recreate table with InnoDB engine and role column
     $sql = "CREATE TABLE users (
-        id INT(11) AUTO_INCREMENT PRIMARY KEY,
+        id INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
         email VARCHAR(256) NOT NULL,
         pass VARCHAR(256) NOT NULL,
         message TEXT NOT NULL,
-        money INT(11) NOT NULL
+        money INT(11) NOT NULL,
+        role VARCHAR(20) NOT NULL DEFAULT 'user'
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci";
     mysqli_query($conn, $sql);
     
-    // Insert sample users with plaintext passwords
-    $sql = "INSERT INTO users (email, pass, message, money) VALUES
-        ('admin@example.com', 'admin123', 'I am the administrator', 10000),
-        ('user@example.com', 'password123', 'Regular user here', 500),
-        ('alice@example.com', 'alice123', 'Hello from Alice!', 1200),
-        ('bob@example.com', 'bob456', 'Bob was here', 800)";
+    // Set auto_increment to start at 8 as in the SQL dump
+    $sql = "ALTER TABLE users AUTO_INCREMENT = 8";
+    mysqli_query($conn, $sql);
+    
+    // Insert sample users matching the SQL dump
+    $sql = "INSERT INTO users (id, email, pass, message, money, role) VALUES
+        (1, 'admin@example.com', 'admin123', 'I am the administrator', 10000, 'admin'),
+        (2, 'user@example.com', 'password123', 'Regular user here', 500, 'user'),
+        (3, 'alice@example.com', 'alice123', 'Hello from Alice!', 1200, 'user'),
+        (4, 'bob@example.com', 'bob456', 'Bob was here', 800, 'user'),
+        (7, 'test2@gmail.com', 'test2pass', 'Test account', 0, 'user')";
     
     if(mysqli_query($conn, $sql)) {
         $success = "Database has been reset successfully!";
@@ -33,7 +39,7 @@ if(isset($_POST['confirm_reset'])) {
     }
 }
 
-// Vulnerable backup implementation
+// Updated backup implementation
 if(isset($_GET['backup']) && $_GET['backup'] == 1) {
     // Direct file IO operations without proper permission checking
     $backup_file = "backup_" . date("Y-m-d") . ".sql";
@@ -44,12 +50,15 @@ if(isset($_GET['backup']) && $_GET['backup'] == 1) {
     $backup_content .= "-- Generated: " . date("Y-m-d H:i:s") . "\n\n";
     $backup_content .= "DROP TABLE IF EXISTS users;\n";
     $backup_content .= "CREATE TABLE users (\n";
-    $backup_content .= "  id INT(11) AUTO_INCREMENT PRIMARY KEY,\n";
+    $backup_content .= "  id INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,\n";
     $backup_content .= "  email VARCHAR(256) NOT NULL,\n";
     $backup_content .= "  pass VARCHAR(256) NOT NULL,\n";
     $backup_content .= "  message TEXT NOT NULL,\n";
-    $backup_content .= "  money INT(11) NOT NULL\n";
+    $backup_content .= "  money INT(11) NOT NULL,\n";
+    $backup_content .= "  role VARCHAR(20) NOT NULL DEFAULT 'user'\n";
     $backup_content .= ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;\n\n";
+    
+    $backup_content .= "ALTER TABLE users AUTO_INCREMENT = 8;\n\n";
     
     while($row = mysqli_fetch_assoc($result)) {
         $backup_content .= "INSERT INTO users VALUES (";
@@ -57,7 +66,8 @@ if(isset($_GET['backup']) && $_GET['backup'] == 1) {
         $backup_content .= "'" . $row['email'] . "', ";
         $backup_content .= "'" . $row['pass'] . "', ";
         $backup_content .= "'" . $row['message'] . "', ";
-        $backup_content .= $row['money'] . ");\n";
+        $backup_content .= $row['money'] . ", ";
+        $backup_content .= "'" . $row['role'] . "');\n";
     }
     
     // Directory traversal vulnerability
