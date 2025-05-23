@@ -7,7 +7,7 @@
 
 **Payload Example 1**
 
-- **Email**: `admin@example.com' OR 1=1 --`
+- **Email**: " OR ""="' OR 1=1 -- 
     
 - **Password**: anything
     
