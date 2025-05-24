@@ -1,9 +1,11 @@
 
 🛡️ Web Security Demo Application
+
 By:
--Alexandrudiun
--Eng-Bkm(Biruk Meles)
--Geroge
+
+- Alexandrudiun
+- Eng-Bkm(Biruk Meles)
+- Geroge
 
 This is an intentionally vulnerable PHP application created for **educational purposes only**. 
 It demonstrates common web vulnerabilities such as:
