@@ -44,22 +44,21 @@ It demonstrates common web vulnerabilities such as:
 
 5. Explore the Vulnerabilities
    - Test login, message posting, and other features.
-   - Use the included 'exploits.html' and 'csrf-demo.html' to simulate attacks.
-   - Refer to 'attack-vectors.txt' for detailed payloads and explanations.
+   - Refer to 'attack-vectors.md' for detailed payloads and explanations.
 
 ------------------------------
 📁 File Overview
 ------------------------------
 
-| File               | Purpose                                               |
-|--------------------|-------------------------------------------------------|
+| File               | Purpose                                              |
+|--------------------|------------------------------------------------------|
 | index.php          | Login & registration form (vulnerable to SQLi)       |
-| dashboard.php      | User dashboard (XSS, CSRF, IDOR)                      |
+| dashboard.php      | User dashboard (XSS, CSRF, IDOR)                     |
 | conn.php           | Database connection configuration                    |
 | reset.php          | Database reset/backup with path traversal flaw       |
 | users.sql          | SQL dump to set up the users table                   |
 | csrf-demo.html     | Example CSRF attack page                             |
-| exploits.html      | Demos for multiple vulnerability types               |
+| attack-vectors.md  | Cheat sheet with payloads in md format               |
 | attack-vectors.txt | Cheat sheet with payloads for various attacks        |
 
 ------------------------------

